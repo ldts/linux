@@ -56,16 +56,6 @@
 #define SDMMC_CDTHRCTL		0x100
 #define SDMMC_DATA(x)		(x)
 
-#define MMC_CCLK_MAX_24M     (24000000)
-#define MMC_CCLK_MAX_25M     (25000000)
-#define MMC_CCLK_MAX_48M     (48000000)
-#define MMC_CCLK_MAX_50M     (50000000)
-#define MMC_CCLK_MAX_80M     (80000000)
-#define MMC_CCLK_MAX_96M     (96000000)
-#define MMC_CCLK_MAX_100M    (100000000)
-#define MMC_CCLK_MAX_150M    (150000000)
-#define MMC_CCLK_MAX_180M    (180000000)
-#define MMC_CCLK_MAX_200M    (200000000)
 #define MMC_EMMC  (0x0)
 #define MMC_SD    (0x1)
 #define MMC_SDIO  (0x2)
@@ -173,17 +163,6 @@
 #define SDMMC_CTRL_ALL_RESET_FLAGS \
 	(SDMMC_CTRL_RESET | SDMMC_CTRL_FIFO_RESET | SDMMC_CTRL_DMA_RESET)
 
-struct dw_mci_hs_priv_data{
- int id;
- int old_timing;
- int gpio_cd;
- int sw_value;
- int old_single_voltage;
- int old_power_mode;
- int priv_bus_hz;
- int cd_vol;
- void __iomem *ao_sysctrl;
-};
 
 /* Register access macros */
 #define mci_readl(dev, reg)			\
@@ -290,4 +269,24 @@ struct dw_mci_drv_data {
 	int		(*prepare_hs400_tuning)(struct dw_mci *host,
 						struct mmc_ios *ios);
 };
+
+/**
+ * dw_mci private data - dw-mshc implementation specific private driver data.
+ * @switch_voltage: start_signal_voltage_switch private implementation
+ * @ao_sysctrl: ao_sysctrl map
+ * @timing: timing specification currently in use
+ * @id: one of MMC_EMMC, MMC_SD, MMC_SDIO
+ */
+struct dw_mci_priv_data {
+       int 	(*switch_voltage)(struct mmc_host *host, struct mmc_ios *ios);
+       void 	__iomem *ao_sysctrl;
+       int 	timing;
+       int 	id;
+};
+
+static inline struct dw_mci_priv_data *mci_priv(struct dw_mci *host)
+{
+	return host->priv;
+}
+
 #endif /* _DW_MMC_H_ */
