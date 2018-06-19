@@ -1900,6 +1900,7 @@ static int yaffs_readdir(struct file *f, void *dirent, filldir_t filldir)
 	int ret_val = 0;
 
 	char name[YAFFS_MAX_NAME_LENGTH + 1];
+	u64 i_version;
 
 	obj = yaffs_dentry_to_obj(Y_GET_DENTRY(f));
 	dev = obj->my_dev;
