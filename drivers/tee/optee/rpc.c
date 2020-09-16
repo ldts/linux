@@ -58,6 +58,7 @@ static void handle_rpc_func_cmd_i2c_transfer(struct tee_context *ctx,
 	struct tee_param *params;
 	size_t i;
 	int ret = -EOPNOTSUPP;
+	int retries = 0;
 	u8 attr[] = {
 		TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT,
 		TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT,
@@ -102,12 +103,17 @@ static void handle_rpc_func_cmd_i2c_transfer(struct tee_context *ctx,
 	client.addr = params[0].u.value.c;
 	snprintf(client.name, I2C_NAME_SIZE, "i2c%d", client.adapter->nr);
 
+	/* cache the current value */
+	retries = client.adapter->retries;
+
 	switch (params[0].u.value.a) {
 	case OPTEE_MSG_RPC_CMD_I2C_TRANSFER_RD:
+		client.adapter->retries = params[1].u.value.b;
 		ret = i2c_master_recv(&client, params[2].u.memref.shm->kaddr,
 				      params[2].u.memref.size);
 		break;
 	case OPTEE_MSG_RPC_CMD_I2C_TRANSFER_WR:
+		client.adapter->retries = params[1].u.value.b;
 		ret = i2c_master_send(&client, params[2].u.memref.shm->kaddr,
 				      params[2].u.memref.size);
 		break;
@@ -126,6 +132,7 @@ static void handle_rpc_func_cmd_i2c_transfer(struct tee_context *ctx,
 			arg->ret = TEEC_SUCCESS;
 	}
 
+	client.adapter->retries = retries;
 	i2c_put_adapter(client.adapter);
 	kfree(params);
 	return;
