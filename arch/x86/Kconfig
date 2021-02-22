@@ -3002,6 +3002,12 @@ config ISA_DMA_API
 	  Enables ISA-style DMA support for devices requiring such controllers.
 	  If unsure, say Y.
 
+config QEMUX86
+	bool "Enable for qemumx86 specific configurations"
+	default n
+	select PCI_MSI_ARCH_FALLBACKS if PCI_MSI
+
+
 if X86_32
 
 config ISA
