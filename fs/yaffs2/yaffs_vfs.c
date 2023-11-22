@@ -282,7 +282,7 @@ MODULE_PARM(yaffs_gc_control, "i");
 	} while (0)
 #else
 #define update_dir_time(dir) do {\
-		(dir)->i_mtime = inode_set_ctime_to_ts( dir, current_time(dir) ); \
+		(dir)->__i_mtime = inode_set_ctime_to_ts( dir, current_time(dir) ); \
 	} while (0)
 #endif
 
@@ -2076,17 +2076,17 @@ static void yaffs_fill_inode_from_obj(struct inode *inode,
 #if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 5, 0))
 
 		inode->i_rdev = old_decode_dev(obj->yst_rdev);
-		inode->i_atime.tv_sec = (time64_t) (obj->yst_atime);
-		inode->i_atime.tv_nsec = 0;
-		inode->i_mtime.tv_sec = (time64_t) obj->yst_mtime;
-		inode->i_mtime.tv_nsec = 0;
+		inode->__i_atime.tv_sec = (time64_t) (obj->yst_atime);
+		inode->__i_atime.tv_nsec = 0;
+		inode->__i_mtime.tv_sec = (time64_t) obj->yst_mtime;
+		inode->__i_mtime.tv_nsec = 0;
 		//inode->i_ctime.tv_sec = (time64_t) obj->yst_ctime;
 		inode->__i_ctime.tv_sec = (time64_t) obj->yst_ctime;
 		inode->__i_ctime.tv_nsec = 0;
 #else
 		inode->i_rdev = obj->yst_rdev;
-		inode->i_atime = obj->yst_atime;
-		inode->i_mtime = obj->yst_mtime;
+		inode->__i_atime = obj->yst_atime;
+		inode->__i_mtime = obj->yst_mtime;
 		inode->i_ctime = obj->yst_ctime;
 #endif
 		inode->i_size = yaffs_get_obj_length(obj);
