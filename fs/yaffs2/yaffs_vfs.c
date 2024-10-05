@@ -351,10 +351,8 @@ static int yaffs_readpage_nolock(struct file *f, struct page *pg)
 
 	if (ret) {
 		ClearPageUptodate(pg);
-		SetPageError(pg);
 	} else {
 		SetPageUptodate(pg);
-		ClearPageError(pg);
 	}
 
 	flush_dcache_page(pg);
@@ -556,7 +554,7 @@ static void yaffs_release_space(struct file *f)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0)
 static int yaffs_write_begin(struct file *filp, struct address_space *mapping,
 			     loff_t pos, unsigned len,
-			     struct page **pagep, void **fsdata)
+			     struct folio **foliop, void **fsdata)
 #else
 static int yaffs_write_begin(struct file *filp, struct address_space *mapping,
 			     loff_t pos, unsigned len, unsigned flags,
@@ -571,15 +569,15 @@ static int yaffs_write_begin(struct file *filp, struct address_space *mapping,
 
 	/* Get a page */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 0)
-	pg = grab_cache_page_write_begin(mapping, index);
+	*foliop = __filemap_get_folio(mapping, index, FGP_WRITEBEGIN,
++                       mapping_gfp_mask(mapping));
 #elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28)
 	pg = grab_cache_page_write_begin(mapping, index, flags);
 #else
 	pg = __grab_cache_page(mapping, index);
 #endif
 
-	*pagep = pg;
-	if (!pg) {
+	if (!*foliop) {
 		ret = -ENOMEM;
 		goto out;
 	}
@@ -695,13 +693,13 @@ static ssize_t yaffs_file_write(struct file *f, const char *buf, size_t n,
 #if (YAFFS_USE_WRITE_BEGIN_END > 0)
 static int yaffs_write_end(struct file *filp, struct address_space *mapping,
 			   loff_t pos, unsigned len, unsigned copied,
-			   struct page *pg, void *fsdadata)
+			   struct folio *folio, void *fsdadata)
 {
 	int ret = 0;
 	void *addr, *kva;
 	uint32_t offset_into_page = pos & (PAGE_CACHE_SIZE - 1);
 
-	kva = kmap(pg);
+	kva = kmap(&folio->page);
 	addr = kva + offset_into_page;
 
 	yaffs_trace(YAFFS_TRACE_OS,
@@ -714,14 +712,13 @@ static int yaffs_write_end(struct file *filp, struct address_space *mapping,
 		yaffs_trace(YAFFS_TRACE_OS,
 			"yaffs_write_end not same size ret %d  copied %d",
 			ret, copied);
-		SetPageError(pg);
 	}
 
-	kunmap(pg);
+	kunmap(&folio->page);
 
 	yaffs_release_space(filp);
-	unlock_page(pg);
-	page_cache_release(pg);
+	unlock_page(&folio->page);
+	page_cache_release(&folio->page);
 	return ret;
 }
 #else
@@ -748,7 +745,6 @@ static int yaffs_commit_write(struct file *f, struct page *pg, unsigned offset,
 		yaffs_trace(YAFFS_TRACE_OS,
 			"yaffs_commit_write not same size n_written %d  n_bytes %d",
 			n_written, n_bytes);
-		SetPageError(pg);
 	}
 	kunmap(pg);
 
