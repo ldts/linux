@@ -217,7 +217,7 @@
 		regulator-min-microvolt = <3700000>;
 		regulator-max-microvolt = <3700000>;
 	};
-	
+
        vdd_ntn_0p9: regulator-vdd-ntn-0p9 {
                compatible = "regulator-fixed";
                regulator-name = "VDD_NTN_0P9";
@@ -241,7 +241,33 @@
                pinctrl-names = "default";
                regulator-enable-ramp-delay = <10000>;
        };
-	
+
+
+        vreg-pcie0-1p05v {
+               compatible = "regulator-fixed";
+               regulator-name = "PCIE0_1.05V";
+               gpio = <&pm7250b_gpios 4 GPIO_ACTIVE_HIGH>;
+               regulator-min-microvolt = <1050000>;
+               regulator-max-microvolt = <1050000>;
+               enable-active-high;
+               pinctrl-0 = <&upd_pwr_en2_state>;
+               pinctrl-names = "default";
+
+               regulator-always-on;
+       };
+
+       vreg-pcie0_3p3v-dual {
+               compatible = "regulator-fixed";
+               regulator-name = "PCIE0_3.3V_Dual";
+               gpio = <&pm7250b_gpios 1 GPIO_ACTIVE_HIGH>;
+               regulator-min-microvolt = <3300000>;
+               regulator-max-microvolt = <3300000>;
+               enable-active-high;
+               pinctrl-0 = <&upd_pwr_en1_state>;
+               pinctrl-names = "default";
+
+               regulator-always-on;
+       };
 };
 
 &apps_rsc {
@@ -751,6 +777,9 @@
                vddio2-supply = <&vdd_ntn_1p8>;
                vddio18-supply = <&vdd_ntn_1p8>;
 
+               pinctrl-0 = <&qps615_resx_state>, <&upd_hub_rst_state>, <&usb_hub_reset_state>;
+               pinctrl-names = "default";
+
                i2c-parent = <&i2c0 0x77>;
 
                reset-gpios = <&pm8350c_gpios 1 GPIO_ACTIVE_LOW>;
@@ -985,6 +1014,15 @@
 };
 
 &pm7250b_gpios {
+	upd_pwr_en1_state: upd-pwr-en1-state {
+              pins = "gpio1";
+              function = "normal";
+
+              output-enable;
+              input-disable;
+              power-source = <0>;
+        };
+
 	lt9611_rst_pin: lt9611-rst-state {
 		pins = "gpio2";
 		function = "normal";
@@ -993,6 +1031,15 @@
 		input-disable;
 		power-source = <0>;
 	};
+
+       upd_pwr_en2_state: upd-pwr-en2-state {
+               pins = "gpio4";
+               function = "normal";
+
+               output-enable;
+               input-disable;
+               power-source = <0>;
+       };
 };
 
 &sdc2_clk {
@@ -1011,6 +1058,16 @@
 };
 
 &pm8350c_gpios {
+       qps615_resx_state: qps615-resetx-state {
+               pins = "gpio1";
+               function = "normal";
+
+               bias-disable;
+               input-disable;
+               output-enable;
+               power-source = <0>;
+       };
+
        ntn_0p9_en: ntn-0p9-en-state {
                pins = "gpio2";
                function = "normal";
@@ -1028,6 +1085,17 @@
                bias-disable;
                input-disable;
                output-enable;
+               power-source = <0>;
+       };
+
+      upd_hub_rst_state: upd-hub-rst-state {
+               pins = "gpio4";
+               function = "normal";
+
+               bias-disable;
+               input-disable;
+               output-enable;
+               output-high;
                power-source = <0>;
        };
 };
@@ -1060,4 +1128,14 @@
 		function = "gpio";
 		bias-pull-up;
 	};
+
+       usb_hub_reset_state: usb-hub-reset-state {
+               pins = "gpio162";
+               function = "gpio";
+
+               drive-strength = <2>;
+               output-low;
+               bias-disable;
+       };
+
 };
