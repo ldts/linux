@@ -169,7 +169,9 @@ static int qcom_pas_tee_init_image(struct device *dev, u32 peripheral,
 		err = -EINVAL;
 		goto err_shm;
 	}
-	ctx->ptr = (void *)mdata_shm;
+
+	if (ctx)
+		ctx->ptr = (void *)mdata_shm;
 
 	return 0;
 err_shm:
