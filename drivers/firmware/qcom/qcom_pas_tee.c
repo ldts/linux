@@ -197,8 +197,9 @@ static int qcom_pas_tee_mem_setup(struct device *dev, u32 peripheral,
 
 	param[0].attr = TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT;
 	param[0].u.value.a = peripheral;
-	param[0].u.value.b = addr;
-	param[0].u.value.c = size;
+	param[1].attr = TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT;
+	param[1].u.value.a = addr;
+	param[1].u.value.b = size;
 
 	ret = tee_client_invoke_func(data->ctx, &inv_arg, param);
 	if ((ret < 0) || (inv_arg.ret != 0)) {
