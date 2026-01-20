@@ -6466,7 +6466,6 @@
 			reg = <0 0x17c10000 0 0x1000>;
 			clocks = <&sleep_clk>;
 			interrupts = <GIC_SPI 0 IRQ_TYPE_EDGE_RISING>;
-			status = "reserved"; /* Owned by Gunyah hyp */
 		};
 
 		timer@17c20000 {
