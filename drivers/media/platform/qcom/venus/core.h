@@ -127,6 +127,13 @@ struct venus_format {
 	u32 flags;
 };
 
+
+enum venus_trust_zone {
+	VENUS_NO_TZ			= 0,
+	VENUS_TZ_QTEE			= 1,
+	VENUS_TZ_OPTEE			= 2,
+};
+
 /**
  * struct venus_core - holds core parameters valid for all instances
  *
@@ -208,7 +215,7 @@ struct venus_core {
 	struct device *dev;
 	struct device *dev_dec;
 	struct device *dev_enc;
-	unsigned int use_tz;
+	enum venus_trust_zone use_tz;
 	struct video_firmware {
 		struct device *dev;
 		struct iommu_domain *iommu_domain;
