@@ -5526,6 +5526,7 @@
 			#qcom,sensors = <13>;
 			interrupt-names = "uplow", "critical";
 			#thermal-sensor-cells = <1>;
+			status = "disabled";
 		};
 
 		tsens3: thermal-sensor@c252000 {
@@ -5537,6 +5538,7 @@
 			#qcom,sensors = <13>;
 			interrupt-names = "uplow", "critical";
 			#thermal-sensor-cells = <1>;
+			status = "disabled";
 		};
 
 		tsens0: thermal-sensor@c263000 {
