@@ -3585,85 +3585,6 @@
 			};
 		};
 
-		etm@6440000 {
-			compatible = "arm,primecell";
-			reg = <0x0 0x6440000 0x0 0x1000>;
-			cpu = <&cpu4>;
-
-			clocks = <&aoss_qmp>;
-			clock-names = "apb_pclk";
-			arm,coresight-loses-context-with-cpu;
-			qcom,skip-power-up;
-
-			out-ports {
-				port {
-					etm4_out: endpoint {
-						remote-endpoint =
-						<&apss_funnel0_in4>;
-					};
-				};
-			};
-		};
-
-		etm@6540000 {
-			compatible = "arm,primecell";
-			reg = <0x0 0x6540000 0x0 0x1000>;
-			cpu = <&cpu5>;
-
-			clocks = <&aoss_qmp>;
-			clock-names = "apb_pclk";
-			arm,coresight-loses-context-with-cpu;
-			qcom,skip-power-up;
-
-			out-ports {
-				port {
-					etm5_out: endpoint {
-						remote-endpoint =
-						<&apss_funnel0_in5>;
-					};
-				};
-			};
-		};
-
-		etm@6640000 {
-			compatible = "arm,primecell";
-			reg = <0x0 0x6640000 0x0 0x1000>;
-			cpu = <&cpu6>;
-
-			clocks = <&aoss_qmp>;
-			clock-names = "apb_pclk";
-			arm,coresight-loses-context-with-cpu;
-			qcom,skip-power-up;
-
-			out-ports {
-				port {
-					etm6_out: endpoint {
-						remote-endpoint =
-						<&apss_funnel0_in6>;
-					};
-				};
-			};
-		};
-
-		etm@6740000 {
-			compatible = "arm,primecell";
-			reg = <0x0 0x6740000 0x0 0x1000>;
-			cpu = <&cpu7>;
-
-			clocks = <&aoss_qmp>;
-			clock-names = "apb_pclk";
-			arm,coresight-loses-context-with-cpu;
-			qcom,skip-power-up;
-
-			out-ports {
-				port {
-					etm7_out: endpoint {
-						remote-endpoint =
-						<&apss_funnel0_in7>;
-					};
-				};
-			};
-		};
 
 		funnel@6800000 {
 			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
@@ -3716,39 +3637,8 @@
 						<&etm3_out>;
 					};
 				};
-
-				port@4 {
-					reg = <4>;
-					apss_funnel0_in4: endpoint {
-						remote-endpoint =
-						<&etm4_out>;
-					};
-				};
-
-				port@5 {
-					reg = <5>;
-					apss_funnel0_in5: endpoint {
-						remote-endpoint =
-						<&etm5_out>;
-					};
-				};
-
-				port@6 {
-					reg = <6>;
-					apss_funnel0_in6: endpoint {
-						remote-endpoint =
-						<&etm6_out>;
-					};
-				};
-
-				port@7 {
-					reg = <7>;
-					apss_funnel0_in7: endpoint {
-						remote-endpoint =
-						<&etm7_out>;
-					};
-				};
 			};
+
 		};
 
 		funnel@6810000 {
